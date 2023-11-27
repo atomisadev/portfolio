@@ -6,7 +6,7 @@ import { Separator } from "./ui/separator";
 export function Navigation() {
   return (
     <>
-      <div className="mx-[15rem] flex justify-between items-center border-b">
+      <div className="lg:mx-[15rem] p-2 flex-col justify-center md:flex-row flex md:justify-between items-center border-b">
         <div className="flex gap-10 items-center">
           <Logo />
         </div>

@@ -1,89 +1,132 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import Matter from "matter-js";
 
-interface Ball {
-  x: number;
-  y: number;
-  dy: number;
-  radius: number;
-  color: string;
+interface BackgroundBallProps {
+  style: React.CSSProperties;
+  className?: string;
 }
 
-export function BackgroundBalls({ style }: { style: React.CSSProperties }) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+export function BackgroundBalls({ style, className }: BackgroundBallProps) {
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+  const engineRef = useRef<Matter.Engine | undefined>(undefined);
 
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  // Create a function for setting up the scene
+  const setup = () => {
+    if (!sceneRef.current) return;
 
-  const balls = useRef<Ball[]>([]); // Store balls in a ref
+    // clear previous engine
+    if (engineRef.current) {
+      Matter.Engine.clear(engineRef.current);
+    }
+
+    const engine = Matter.Engine.create();
+    engineRef.current = engine;
+
+    const render = Matter.Render.create({
+      element: sceneRef.current,
+      engine,
+      options: {
+        width: window.innerWidth,
+        height: sceneRef.current.clientHeight,
+        background: style.backgroundColor,
+        wireframes: false,
+        showAngleIndicator: false,
+      },
+    });
+
+    const numOfBalls = 65;
+    const ballSpawnPoint = { x: window.innerWidth / 2, y: -50 };
+
+    let ballCounter = 0;
+    const dropBallsInterval = setInterval(() => {
+      if (ballCounter >= numOfBalls) {
+        clearInterval(dropBallsInterval);
+      } else {
+        const ball1 = createBall(ballSpawnPoint.x, ballSpawnPoint.y);
+        const ball2 = createBall(ballSpawnPoint.x, ballSpawnPoint.y);
+        Matter.World.add(engine.world, [ball1, ball2]);
+        ballCounter += 2;
+      }
+    }, 500);
+
+    const createBall = (x: number, y: number) =>
+      Matter.Bodies.circle(x, y, getRandom(10, 50), {
+        restitution: 0.5,
+        friction: 0.05,
+        render: {
+          fillStyle: `hsl(${getRandom(200, 260)}, 50%, 50%)`,
+        },
+      });
+
+    const getRandom = (min: number, max: number) =>
+      Math.random() * (max - min) + min;
+
+    const floor = Matter.Bodies.rectangle(
+      window.innerWidth / 2,
+      sceneRef.current.clientHeight,
+      window.innerWidth,
+      10,
+      {
+        isStatic: true,
+        render: {
+          visible: false,
+        },
+      }
+    );
+
+    const wallOptions = { isStatic: true, render: { visible: false } };
+    const wallWidth = 10;
+    const leftWall = Matter.Bodies.rectangle(
+      wallWidth / 2,
+      sceneRef.current.clientHeight / 2,
+      wallWidth,
+      sceneRef.current.clientWidth,
+      wallOptions
+    );
+
+    const rightWall = Matter.Bodies.rectangle(
+      window.innerWidth - wallWidth / 2,
+      sceneRef.current.clientHeight / 2,
+      wallWidth,
+      sceneRef.current.clientHeight,
+      wallOptions
+    );
+
+    Matter.World.add(engine.world, [floor, leftWall, rightWall]);
+
+    const mouse = Matter.Mouse.create(render.canvas);
+    const mouseConstraint = Matter.MouseConstraint.create(engine, {
+      mouse,
+      constraint: {
+        stiffness: 0.2,
+        render: { visible: false },
+      },
+    });
+
+    Matter.World.add(engine.world, mouseConstraint);
+    render.mouse = mouse;
+
+    Matter.Engine.run(engine);
+    Matter.Render.run(render);
+  };
 
   useEffect(() => {
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        setDimensions(containerRef.current.getBoundingClientRect());
-      }
+    setup();
+
+    return () => {
+      if (engineRef.current) Matter.Engine.clear(engineRef.current);
     };
-
-    updateDimensions();
-
-    window.addEventListener("resize", updateDimensions);
-
-    return () => window.removeEventListener("resize", updateDimensions);
   }, []);
 
   useEffect(() => {
-    const getRandomArbitrary = (min: number, max: number) => {
-      return Math.random() * (max - min) + min;
+    const handleResize = () => {
+      setup();
     };
 
-    const generateRandomColor = () => {
-      const shadeOfPurple = Math.floor(getRandomArbitrary(200, 260));
-      return `hsl(${shadeOfPurple}, 50%, 50%)`;
-    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  });
 
-    const canvas = canvasRef.current;
-    if (canvas && dimensions) {
-      canvas.width = dimensions.width;
-      canvas.height = dimensions.height;
-      const context = canvas.getContext("2d");
-
-      for (let i = 0; i < 50; i++) {
-        const radius = getRandomArbitrary(5, 50);
-        balls.current.push({
-          x: getRandomArbitrary(radius, canvas.width - radius),
-          y: getRandomArbitrary(radius, canvas.height - radius),
-          dy: getRandomArbitrary(1, 3),
-          radius,
-          color: generateRandomColor(),
-        });
-      }
-
-      const render = () => {
-        if (context) {
-          context.clearRect(0, 0, canvas.width, canvas.height);
-          balls.current.forEach((ball) => {
-            context.beginPath();
-            context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2, false);
-            context.fillStyle = ball.color;
-            ball.y += ball.dy;
-            // Detect collision with ground
-            if (ball.y + ball.radius > canvas.height) {
-              ball.y = canvas.height - ball.radius;
-              ball.dy *= -0.9; // Add some "bounce"
-            } else {
-              ball.dy += 0.2; // Gravity
-            }
-          });
-          requestAnimationFrame(render);
-        }
-      };
-      render();
-    }
-  }, [dimensions]);
-
-  return (
-    <div ref={containerRef} style={{ position: "relative", ...style }}>
-      <canvas ref={canvasRef} />
-    </div>
-  );
+  return <div ref={sceneRef} style={style} className={className}></div>;
 }
