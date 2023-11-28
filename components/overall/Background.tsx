@@ -12,7 +12,7 @@ export default function Background() {
     if (pageName === "/") {
       setName("Atom.");
     } else if (pageName === "/about") {
-      setName("About Me.");
+      setName("About.");
     } else if (pageName === "/projects") {
       setName("Projects.");
     } else {
