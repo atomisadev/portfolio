@@ -1,20 +1,18 @@
-import { BackgroundBalls } from "@/components/balls";
-import { Navigation } from "@/components/navigation";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import type { Metadata } from "next";
 
-export default function Home() {
+import Herosection from "@/components/sections/home/Herosection";
+import Footer from "@/components/sections/footer/Footer";
+
+export const metadata: Metadata = {
+  title: "Home | Atom",
+  description: "Atom | A full-stack web developer and UI/UX designer.",
+};
+
+export default function About() {
   return (
     <>
-      <Navigation />
-      <div className="relative h-[80vh]">
-        <div className="absolute w-full h-full">
-          <BackgroundBalls style={{ height: "100%" }} />
-        </div>
-        <div className="absolute w-full h-[30vh] flex items-center justify-center">
-          <p className="text-2xl">Atom</p>
-        </div>
-      </div>
+      <Herosection />
+      <Footer name="See More About Me" href="/about" />
     </>
   );
 }
