@@ -10,7 +10,7 @@ export default function Background() {
 
   useEffect(() => {
     if (pageName === "/") {
-      setName("Atom.");
+      setName("Mohit.");
     } else if (pageName === "/about") {
       setName("About.");
     } else if (pageName === "/projects") {

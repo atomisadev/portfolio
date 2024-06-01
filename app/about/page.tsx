@@ -17,7 +17,7 @@ import Subtitle from "@/components/sections/about/Subtitle";
 import HorizentalContent from "@/components/sections/about/HorizentalContent";
 
 export const metadata: Metadata = {
-  title: "About | Atom",
+  title: "About | Mohit",
   description:
     "I am a full-stack web developer and enjoy coding, with a little too much time on my hands.",
 };

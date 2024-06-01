@@ -11,10 +11,10 @@ import type { Metadata } from "next";
 import { poppins } from "@/lib/fonts";
 
 export const metadata: Metadata = {
-  title: "Atom | Fullstack Web Developer, Mobile App Developer, and Designer.",
+  title: "Mohit | Fullstack Web Developer, Mobile App Developer, and Designer.",
   description:
-    "Atom | I am a full-stack web developer and enjoy coding, with a little too much time on my hands.",
-  applicationName: "https://atomisadev.me",
+    "Mohit | I am a full-stack web developer and enjoy coding, with a little too much time on my hands.",
+  applicationName: "https://mohitsr.tech",
 };
 
 export default function RootLayout({

@@ -4,7 +4,7 @@ import Header from "@/components/overall/Header";
 export default function Herosection() {
   return (
     <>
-      <Header name="I'm Atom." />
+      <Header name="I'm Mohit." />
 
       <p className="text-base font-light pt-6 text-left dark:text-white">
         I have a passion for web development and programming in general. I

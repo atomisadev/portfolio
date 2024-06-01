@@ -1,4 +1,4 @@
-# Atom's Portfolio
+# Mohit's Portfolio
 
 This is a portfolio page that I worked up while being bored in class, and decided to turn it into a full portfolio website.
 

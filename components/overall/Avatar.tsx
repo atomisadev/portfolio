@@ -35,7 +35,7 @@ export function Avatar({
     >
       <Image
         src={avatarImage}
-        alt="Atom avatar, just his logo"
+        alt="Mohit avatar, just his logo"
         sizes={large ? "4rem" : "2.25rem"}
         className={clsx(
           "rounded-full bg-cyan-800 object-cover dark:bg-cyan-400",
